@@ -1,0 +1,167 @@
+<html>
+
+<head>
+    <title>1942 Game</title>
+
+    <link href="style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id='container'>
+        <div id='hero'></div>
+        <div id='enemies'></div>
+        <div id='bullets'>
+            <div class='bullet' style='top:150px; left:200px;'></div>
+            <div class='bullet' style='top:250px; left:200px;'></div>
+            <div class='bullet' style='top:350px; left:200px;'></div>
+            <div class='bullet' style='top:450px; left:200px;'></div>
+        </div>
+    </div>
+
+    <div id='score'></div>
+
+
+    <script>
+        var score = 0;
+        var hero = {
+            x: 300,
+            y: 400
+        }
+
+        var enemies = [{
+            x: 50,
+            y: 50
+        }, {
+            x: 150,
+            y: 50
+        }, {
+            x: 450,
+            y: 150
+        }, {
+            x: 350,
+            y: 250
+        }, {
+            x: 880,
+            y: 20
+        }, {
+            x: 520,
+            y: 100
+        }, {
+            x: 650,
+            y: 150
+        }];
+
+        var bullets = [];
+
+        function displayHero() {
+            document.getElementById('hero').style['top'] = hero.y + "px";
+            document.getElementById('hero').style['left'] = hero.x + "px";
+        }
+
+        function displayScore() {
+            document.getElementById('score').innerHTML = score;
+        }
+
+        function displayEnemies() {
+            var output = '';
+            for (var i = 0; i < enemies.length; i++) {
+                output += "<div class='enemy1' style='top:" + enemies[i].y + "px; left:" +
+                    enemies[i].x + "px;'></div>";
+            }
+            document.getElementById('enemies').innerHTML = output;
+        }
+
+        function moveEnemies() {
+            for (var i = 0; i < enemies.length; i++) {
+                enemies[i].y += 5;
+                if (enemies[i].y > 540) {
+                    enemies[i].y = 0;
+                    enemies[i].x = Math.random() * 500;
+                }
+            }
+        }
+
+        function moveBullets() {
+            for (var i = 0; i < bullets.length; i++) {
+                bullets[i].y -= 5;
+                if (bullets[i].y < 0) {
+                    bullets[i] = bullets[bullets.length - 1];
+                    bullets.pop();
+                }
+            }
+        }
+
+        function detectCollision() {
+            for (var i = 0; i < bullets.length; i++) {
+                for (var j = 0; j < enemies.length; j++) {
+                    if (Math.abs(bullets[i].x - enemies[j].x) < 10 && Math.abs(bullets[i].y - enemies[j].y) < 10) {
+                        console.log('bullet', i, 'and enemy', j, 'collided');
+                        score += 10;
+                    }
+                }
+            }
+            // detect with the hero.
+
+            for (var k = 0; k < enemies.length; k++) {
+                if (Math.abs(hero.x - enemies[k].x) < 10 && Math.abs(hero.y - enemies[k].y) < 10) {
+                    // console.log('hero and enemy', k, 'collided');
+                    score = score - 500;
+                }
+                console.log(enemies[k].x);
+                // console.log("hero", hero.x, hero.y)
+            }
+
+
+        }
+
+        function gameLoop() {
+            displayHero();
+            moveEnemies();
+            displayEnemies();
+            moveBullets();
+            displayBullets();
+            detectCollision();
+            displayScore();
+        }
+
+        function displayBullets() {
+            var output = "";
+            for (var i = 0; i < bullets.length; i++) {
+                output += "<div class='bullet' style='top:" + bullets[i].y + "px; left:" +
+                    bullets[i].x + "px;'></div>";
+            }
+            document.getElementById('bullets').innerHTML = output;
+
+        }
+
+        setInterval(gameLoop, 40);
+
+
+        document.onkeydown = function(a) {
+            if (a.keyCode === 37) {
+                hero.x -= 10;
+            } else if (a.keyCode === 39) {
+                hero.x += 10;
+            } else if (a.keyCode === 38) {
+                hero.y -= 10;
+            } else if (a.keyCode === 40) {
+                hero.y += 10;
+            } else if (a.keyCode == 32) {
+                bullets.push({
+                    x: hero.x + 6,
+                    y: hero.y - 15
+                });
+                displayBullets();
+            }
+
+        }
+
+
+        displayHero();
+        displayEnemies();
+    </script>
+
+</body>
+
+</html>
